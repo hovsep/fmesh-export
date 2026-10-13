@@ -80,7 +80,7 @@ func run(f format, dir string) error {
 	if err != nil {
 		return err
 	}
-	cycles := ri.Cycles.All()
+	cycles := slices.Collect(ri.Cycles.All())
 
 	// The output dir is the caller's own argument; os.Root keeps every file
 	// inside it.
@@ -115,8 +115,8 @@ var errNegativeAmount = errors.New("negative amount")
 // transformed by fn, out of the named outputs.
 func forward(fn func(amount float64) float64, outputs ...string) component.ActivationFunc {
 	return func(_ context.Context, this *component.Component) error {
-		for _, in := range this.Inputs().AllOrdered() {
-			for _, amount := range in.Signals().AllPayloads() {
+		for in := range this.Inputs().All() {
+			for amount := range in.Signals().Payloads() {
 				for _, out := range outputs {
 					if err := this.OutputByName(out).PutPayloads(fn(amount.(float64))); err != nil {
 						return err
@@ -148,7 +148,7 @@ func buildMesh() (*fmesh.FMesh, error) {
 	add("router", "routes orders by amount",
 		component.WithInputs("order"), component.WithOutputs("small", "large", "invalid"),
 		component.WithActivationFunc(func(_ context.Context, this *component.Component) error {
-			for _, amount := range this.InputByName("order").Signals().AllPayloads() {
+			for amount := range this.InputByName("order").Signals().Payloads() {
 				out := "small"
 				switch a := amount.(float64); {
 				case a < 0:

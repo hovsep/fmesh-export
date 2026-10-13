@@ -153,8 +153,8 @@ func (b *diagramBuilder) VisitComponent(c *component.Component) error {
 		if color, ok := b.exporter.colors[code]; ok {
 			fmt.Fprintf(&b.out, "  style.stroke: %s\n  style.stroke-width: 3\n", quote(color))
 		}
-		if result != nil && result.ActivationError() != nil {
-			fmt.Fprintf(&b.out, "  %s: %s {shape: callout}\n", b.nextID("e"), quote(result.ActivationError().Error()))
+		if result != nil && result.Err() != nil {
+			fmt.Fprintf(&b.out, "  %s: %s {shape: callout}\n", b.nextID("e"), quote(result.Err().Error()))
 		}
 	}
 	return nil
