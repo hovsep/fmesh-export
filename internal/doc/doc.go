@@ -100,7 +100,7 @@ func resultOf(name string, ar *component.ActivationResult) Result {
 		return Result{Component: name, Code: component.ActivationCodeNoInput.String()}
 	}
 	r := Result{Component: name, Code: ar.Code().String(), Activated: ar.Activated()}
-	for _, err := range ar.ActivationErrors() {
+	for _, err := range ar.Errors() {
 		r.Errors = append(r.Errors, err.Error())
 	}
 	return r

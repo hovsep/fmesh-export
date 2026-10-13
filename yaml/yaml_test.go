@@ -4,6 +4,7 @@ import (
 	"context"
 	stdjson "encoding/json"
 	"errors"
+	"slices"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -160,7 +161,7 @@ func TestExporter_ExportCycle(t *testing.T) {
 	require.Equal(t, 3, ri.Cycles.Len())
 
 	t.Run("results per component, a missing one as no input", func(t *testing.T) {
-		got, err := New().ExportCycle(fm, ri.Cycles.All()[0])
+		got, err := New().ExportCycle(fm, slices.Collect(ri.Cycles.All())[0])
 		require.NoError(t, err)
 		var doc Cycle
 		require.NoError(t, goyaml.Unmarshal(got, &doc))
@@ -174,7 +175,7 @@ func TestExporter_ExportCycle(t *testing.T) {
 	})
 
 	t.Run("errors are listed", func(t *testing.T) {
-		got, err := New().ExportCycle(fm, ri.Cycles.All()[1])
+		got, err := New().ExportCycle(fm, slices.Collect(ri.Cycles.All())[1])
 		require.NoError(t, err)
 		var doc Cycle
 		require.NoError(t, goyaml.Unmarshal(got, &doc))

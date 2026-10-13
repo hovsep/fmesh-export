@@ -152,7 +152,7 @@ func (b *diagramBuilder) VisitComponent(c *component.Component) error {
 			// PlantUML takes a hex line color without its leading "#".
 			style = fmt.Sprintf(" #line:%s;line.bold", strings.TrimPrefix(color, "#"))
 		}
-		if result != nil && result.ActivationError() != nil {
+		if result != nil && result.Err() != nil {
 			b.note = escape(errorText(result))
 		}
 	}
@@ -213,8 +213,8 @@ func oneLine(s string) string {
 // errorText joins a result's activation errors with "; ". The label is one
 // line, so the newlines of ActivationError would leave "e1 e2" ambiguous.
 func errorText(result *component.ActivationResult) string {
-	msgs := make([]string, 0, len(result.ActivationErrors()))
-	for _, err := range result.ActivationErrors() {
+	msgs := make([]string, 0, len(result.Errors()))
+	for _, err := range result.Errors() {
 		msgs = append(msgs, err.Error())
 	}
 	return strings.Join(msgs, "; ")

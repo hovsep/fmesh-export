@@ -154,7 +154,7 @@ func (b *chartBuilder) VisitComponent(c *component.Component) error {
 		if color, ok := b.exporter.colors[code]; ok {
 			fmt.Fprintf(&b.out, "    style %s stroke:%s,stroke-width:3px\n", subgraph, color)
 		}
-		if result != nil && result.ActivationError() != nil {
+		if result != nil && result.Err() != nil {
 			errorNode := b.nextID("e")
 			fmt.Fprintf(&b.out, "    %s -.- %s>%s]\n", b.component, errorNode, quote(errorText(result)))
 		}
@@ -217,8 +217,8 @@ func oneLine(s string) string {
 // errorText joins a result's activation errors with "; ". The label is one
 // line, so the newlines of ActivationError would leave "e1 e2" ambiguous.
 func errorText(result *component.ActivationResult) string {
-	msgs := make([]string, 0, len(result.ActivationErrors()))
-	for _, err := range result.ActivationErrors() {
+	msgs := make([]string, 0, len(result.Errors()))
+	for _, err := range result.Errors() {
 		msgs = append(msgs, err.Error())
 	}
 	return strings.Join(msgs, "; ")

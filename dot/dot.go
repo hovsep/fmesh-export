@@ -128,10 +128,10 @@ func (b *graphBuilder) VisitComponent(c *fmeshcomponent.Component) error {
 	setAttrMap(&b.componentNode.AttributesMap, b.style.attrs[ComponentNode])
 	b.componentNode.Label(label).Attr("group", c.Name())
 
-	if result != nil && result.ActivationError() != nil {
+	if result != nil && result.Err() != nil {
 		errorNode := b.subgraph.Node("id-error-" + c.Name())
 		setAttrMap(&errorNode.AttributesMap, b.style.attrs[ErrorNode])
-		errorNode.Label(result.ActivationError().Error())
+		errorNode.Label(result.Err().Error())
 		b.subgraph.Edge(b.componentNode, errorNode)
 	}
 	return nil
@@ -214,7 +214,7 @@ var statCodes = []fmeshcomponent.ActivationResultCode{
 func cycleStats(fm *fmesh.FMesh, c *cycle.Cycle) []statEntry {
 	counts := make(map[fmeshcomponent.ActivationResultCode]int, len(statCodes))
 	activated := 0
-	for _, comp := range fm.Components().AllOrdered() {
+	for comp := range fm.Components().All() {
 		result := c.ActivationResults().ByName(comp.Name())
 		counts[codeOf(result)]++
 		if result != nil && result.Activated() {

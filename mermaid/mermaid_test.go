@@ -3,6 +3,7 @@ package mermaid
 import (
 	"context"
 	"errors"
+	"slices"
 	"strings"
 	"testing"
 
@@ -72,7 +73,7 @@ func runAndExportCycles(t *testing.T, e *Exporter, fm *fmesh.FMesh) []string {
 	ri, err := fm.Run(t.Context())
 	require.NoError(t, err)
 	charts := make([]string, 0, ri.Cycles.Len())
-	for _, c := range ri.Cycles.All() {
+	for c := range ri.Cycles.All() {
 		chart, err := e.ExportCycle(fm, c)
 		require.NoError(t, err)
 		charts = append(charts, string(chart))
@@ -243,7 +244,7 @@ func TestExporter_ExportCycleFromHook(t *testing.T) {
 	ri, err := fm.Run(t.Context())
 	require.NoError(t, err)
 	require.Len(t, frames, ri.Cycles.Len())
-	for i, c := range ri.Cycles.All() {
+	for i, c := range slices.Collect(ri.Cycles.All()) {
 		want, err := e.ExportCycle(fm, c)
 		require.NoError(t, err)
 		assert.Equal(t, string(want), frames[i], "cycle %d", c.Number())
